@@ -1,2 +1,0 @@
-# gcc
-Globant coding challenge
