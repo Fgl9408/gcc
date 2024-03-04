@@ -1,0 +1,51 @@
+--Number of employees hired for each job and department 
+in 2021 divided by quarter. 
+The table must be ordered alphabetically by department and job.
+
+select 
+	department.department,
+	job.job,
+	count(CASE
+        WHEN strftime('%m', datetime_todo_2) BETWEEN '01' AND '03' THEN 'Q1'
+    END) as Q1,
+	count(CASE
+        WHEN strftime('%m', datetime_todo_2) BETWEEN '04' AND '06' THEN 'Q2'
+    END) as Q2,
+	count(CASE
+        WHEN strftime('%m', datetime_todo_2) BETWEEN '07' AND '09' THEN 'Q3'
+    END) as Q3,
+	count(CASE
+        WHEN strftime('%m', datetime_todo_2) BETWEEN '10' AND '12' THEN 'Q4'
+    END) as Q4
+from employee
+inner join job on employee.job_id = job.id
+inner join department on employee.department_id = department.id
+where 1=1
+and strftime('%Y', datetime(datetime_todo_2)) = '2021'
+group by department.id,
+		job.id
+order by department.department,
+		job.job
+
+-------
+
+
+--List of ids, name and number of employees hired of each department that hired more
+employees than the mean of employees hired in 2021 for all the departments, ordered
+by the number of employees hired (descending).
+
+select department.id,
+       department.department,
+	   count(employee.id) as hired
+from employee
+inner join department on employee.department_id = department.id
+group by department.id,
+       department.department
+having count(employee.id) > (select avg(number_empl) as Mean from (select department, 
+count(employee.id) as number_empl
+from employee
+inner join department on employee.department_id = department.id
+where 1=1
+and strftime('%Y', datetime(datetime_todo_2)) = '2021'
+group by department.id))
+order by count(employee.id) desc
